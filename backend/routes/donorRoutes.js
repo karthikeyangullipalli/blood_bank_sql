@@ -61,6 +61,17 @@ router.patch("/queries/:id/status", (req, res) => {
   );
 });
 
+router.delete("/queries/:id", (req, res) => {
+  db.query(
+    "DELETE FROM contact_query WHERE query_id = ?",
+    [req.params.id],
+    (err) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: "Query deleted" });
+    }
+  );
+});
+
 router.get("/queries", (req, res) => {
   db.query("SELECT * FROM contact_query ORDER BY created_at DESC", (err, result) => {
     if (err) return res.status(500).json({ error: err.message });

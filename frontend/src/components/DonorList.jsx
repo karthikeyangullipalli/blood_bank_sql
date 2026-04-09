@@ -52,19 +52,22 @@ function DonorList({ refresh }) {
                 <div style={styles.avatar}>
                   {d.donor_name?.charAt(0).toUpperCase()}
                 </div>
-                <div>
+                <div style={styles.cardInfo}>
                   <h3 style={styles.name}>{d.donor_name}</h3>
                   <p style={styles.phone}>{d.donor_number}</p>
+                  {d.donor_mail && <p style={styles.email}>{d.donor_mail}</p>}
                 </div>
-                <div style={styles.bloodBadge}>{d.blood_group}</div>
+                <div style={styles.cardMeta}>
+                  <div style={styles.bloodBadge}>{d.blood_group}</div>
+                  <button
+                    onClick={() => handleDelete(d.donor_id)}
+                    style={styles.deleteBtn}
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
               <p style={styles.address}>📍 {d.donor_address}</p>
-              <button
-                onClick={() => handleDelete(d.donor_id)}
-                style={styles.deleteBtn}
-              >
-                Delete
-              </button>
             </div>
           ))}
         </div>
@@ -124,9 +127,20 @@ const styles = {
   },
   cardTop: {
     display: "flex",
-    alignItems: "center",
+    alignItems: "flex-start",
     gap: "12px",
     marginBottom: "8px",
+  },
+  cardInfo: {
+    flex: 1,
+    minWidth: "160px",
+  },
+  cardMeta: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-end",
+    gap: "8px",
+    justifyContent: "space-between",
   },
   avatar: {
     width: "38px",
@@ -151,6 +165,12 @@ const styles = {
     margin: 0,
     fontSize: "13px",
     color: "#64748b",
+  },
+  email: {
+    margin: "4px 0 0",
+    fontSize: "13px",
+    color: "#475569",
+    wordBreak: "break-word",
   },
   bloodBadge: {
     marginLeft: "auto",

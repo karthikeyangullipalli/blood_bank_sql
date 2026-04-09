@@ -15,16 +15,15 @@ exports.getDonors = (req, res) => {
     res.json(result);
   });
 };
-
 // POST add donor
 exports.addDonor = (req, res) => {
-  const { name, phone, age, gender, blood_id, address } = req.body;
+  const { name, email, phone, age, gender, blood_id, address } = req.body;
   const sql = `
     INSERT INTO donor_details 
-    (donor_name, donor_number, donor_age, donor_gender, blood_id, donor_address)
-    VALUES (?, ?, ?, ?, ?, ?)
+    (donor_name, donor_mail, donor_number, donor_age, donor_gender, blood_id, donor_address)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
-  db.query(sql, [name, phone, age, gender, blood_id, address], (err) => {
+  db.query(sql, [name, email, phone, age, gender, blood_id, address], (err) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ message: "Donor added successfully" });
   });

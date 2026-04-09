@@ -3,7 +3,7 @@ import API from "../api";
 
 function AddDonor({ onAdd }) {
   const [form, setForm] = useState({
-    name: "", phone: "", age: "", gender: "", blood_id: "", address: ""
+    name: "", email: "", phone: "", age: "", gender: "", blood_id: "", address: ""
   });
   const [bloods, setBloods] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -22,7 +22,7 @@ function AddDonor({ onAdd }) {
     try {
       await API.post("/donors", form);
       alert("Donor added successfully!");
-      setForm({ name: "", phone: "", age: "", gender: "", blood_id: "", address: "" });
+      setForm({ name: "", email: "", phone: "", age: "", gender: "", blood_id: "", address: "" });
       onAdd();
     } catch (err) {
       console.error("Error adding donor:", err);
@@ -57,6 +57,17 @@ function AddDonor({ onAdd }) {
           type="tel"
           placeholder="10-digit number"
           value={form.phone}
+          onChange={handleChange}
+          required
+        />
+
+        <label style={styles.label}>Email</label>
+        <input
+          style={styles.input}
+          name="email"
+          type="email"
+          placeholder="example@gmail.com"
+          value={form.email}
           onChange={handleChange}
           required
         />

@@ -78,16 +78,28 @@ setSubmitMsg("✅ Request submitted and saved to database.");
   const handleMarkDone = async (id) => {
   try {
     console.log(`Marking query ${id} as Read...`);
-    const response = await API.patch(`/donors/queries/${id}/status`, { status: "Read" });
-    console.log("Update response:", response);
-    setQueries(prev =>
-      prev.map(q => q.query_id === id ? { ...q, query_status: "Read" } : q)
-    );
+    await API.patch(`/donors/queries/${id}/status`, { status: "Read" });
+    fetchQueries();
     setSubmitMsg("✅ Request marked as completed!");
     setTimeout(() => setSubmitMsg(""), 3000);
   } catch (err) {
     console.error("Failed to update status:", err.response?.data || err.message);
     setSubmitMsg(`❌ Failed to update: ${err.response?.data?.error || err.message}`);
+    setTimeout(() => setSubmitMsg(""), 3000);
+  }
+};
+
+const handleDeleteQuery = async (id) => {
+  try {
+    console.log(`Deleting query ${id}...`);
+    await API.delete(`/donors/queries/${id}`);
+    fetchQueries();
+    setSubmitMsg("✅ Request deleted successfully.");
+    setTimeout(() => setSubmitMsg(""), 3000);
+    onQuerySubmit();
+  } catch (err) {
+    console.error("Failed to delete query:", err.response?.data || err.message);
+    setSubmitMsg(`❌ Failed to delete: ${err.response?.data?.error || err.message}`);
     setTimeout(() => setSubmitMsg(""), 3000);
   }
 };
@@ -241,20 +253,29 @@ setSubmitMsg("✅ Request submitted and saved to database.");
                   </div>
                   <p style={styles.queryMessage}>"{q.query_message}"</p>
                   {q.created_at && (
-                    <p style={styles.queryTime}>
-                       Submitted: {new Date(q.created_at).toLocaleString("en-IN")}<br/>
-                      {/* Add this button below the queryTime <p> tag */}
-{(q.query_status || "Pending") === "Pending" && (
-  <button
-    onClick={() => handleMarkDone(q.query_id)}
-    style={styles.doneBtn}
-  >
-  Mark as Completed
-  </button>
-)}
-                      
-                     
-                    </p>
+                    <>
+                      <div style={styles.queryTime}>
+                        Submitted: {new Date(q.created_at).toLocaleString("en-IN")}
+                      </div>
+                      <div style={styles.actionsRow}>
+                        {(q.query_status || "Pending").toLowerCase() === "pending" ? (
+                          <button
+                            onClick={() => handleMarkDone(q.query_id)}
+                            style={styles.doneBtn}
+                          >
+                            Mark as Completed
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleDeleteQuery(q.query_id)}
+                            style={styles.deleteBtn}
+                          >
+                            Delete Request
+                          </button>
+                        )}
+                      </div>
+                    </>
+
                   )}
                 </div>
               ))}
@@ -279,6 +300,18 @@ const styles = {
   fontWeight: "500",
   fontFamily: "inherit",
 },
+  deleteBtn: {
+    marginTop: "8px",
+    background: "#fee2e2",
+    color: "#b91c1c",
+    border: "1px solid #fecaca",
+    padding: "5px 14px",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontSize: "13px",
+    fontWeight: "500",
+    fontFamily: "inherit",
+  },
   tabBar: {
     display: "flex",
     gap: "8px",
@@ -478,9 +511,15 @@ const styles = {
     lineHeight: "1.5",
   },
   queryTime: {
-    margin: 0,
+    margin: "0 0 10px",
     fontSize: "12px",
     color: "#94a3b8",
+  },
+  actionsRow: {
+    display: "flex",
+    justifyContent: "flex-start",
+    gap: "10px",
+    flexWrap: "wrap",
   },
 };
 
